@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <style>
+    .button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f2f2f2;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+      color: #333;
+      cursor: pointer;
+      font-size: 16px;
+      height: 40px;
+      margin: 10px;
+      padding: 0 20px;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s ease 0s;
+      width: 200px;
+      z-index: 1; /* Añadido para que los botones estén arriba de los resultados */
+    }
+    .button:hover {
+      background-color: #333;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.6);
+      color: #f2f2f2;
+      transform: translateY(-3px);
+    }
+    .container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+    }
+    .form {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      margin: 10px;
+      width: 500px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2; /* Añadido para que el formulario esté arriba de los botones */
+    }
+    .form input[type="number"],
+    .form input[type="text"] {
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+    }
+    .form input[type="submit"] {
+      background-color: #333;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.6);
+      color: #f2f2f2;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+      padding: 10px;
+      text-align: center;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.3s ease 0s;
+      width: 100%;
+    }
+    .form input[type="submit"]:hover {
+      background-color: #f2f2f2;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+      color: #333;
+      transform: translateY(-3px);
+    }
+    .form h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: none;
+      background-color: #f2f2f2;
+    }
+    .result span {
+      font-weight: bold;
+    }
+    .close-btn {
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="button" onclick="document.querySelector('.form-ejercicio1').style.display = 'flex';">Ejercicio 1</button>
+    <button class="button" onclick="document.querySelector('.form-ejercicio2').style.display = 'flex';">Ejercicio 2</button>
+  </div>
+
+  <!-- Formulario para Ejercicio 1 -->
+  <form id="myForm" onsubmit="return false;" class="form form-ejercicio1">
+    <div class="close-btn" onclick="cerrarFormulario('form-ejercicio1')">X</div>
+    <h2>Formulario de Notas</h2>
+    <label for="nota1">Nota 1:</label>
+    <input type="number" id="nota1" name="nota1" min="10" max="70" required>
+    <label for="nota2">Nota 2:</label>
+    <input type="number" id="nota2" name="nota2" min="10" max="70" required>
+    <label for="nota3">Nota 3:</label>
+    <input type="number" id="nota3" name="nota3" min="10" max="70" required>
+    <label for="asistencia">Asistencia (%):</label>
+    <input type="number" id="asistencia" name="asistencia" min="0" max="100" required>
+    <input type="submit" value="Enviar" onclick="calcularPromedio('form-ejercicio1')">
+    <div id="resultado" class="result">
+      <h2>Resultado: <span id="estado"></span></h2>
+      <p>Promedio: <span id="promedio"></span></p>
+    </div>
+  </form>
+
+  <!-- Formulario para Ejercicio 2 -->
+  <form id="myForm2" onsubmit="return false;" class="form form-ejercicio2">
+    <div class="close-btn" onclick="cerrarFormulario('form-ejercicio2')">X</div>
+    <h2>Contador de Caracteres</h2>
+    <label for="nombre1">Nombre 1:</label>
+    <input type="text" id="nombre1" name="nombre1" required>
+    <label for="nombre2">Nombre 2:</label>
+    <input type="text" id="nombre2" name="nombre2" required>
+    <label for="nombre3">Nombre 3:</label>
+    <input type="text" id="nombre3" name="nombre3" required>
+    <input type="submit" value="Enviar" onclick="contarCaracteres('form-ejercicio2')">
+    <div id="resultado2" class="result">
+      <h2>Resultado:</h2>
+      <p>El nombre con mayor cantidad de caracteres es: <span id="palabraLarga"></span></p>
+      <p>El nombre tiene: <span id="longitudPalabraLarga"></span> caracteres</p>
+    </div>
+  </form>
+
+  <script>
+    function calcularPromedio(formulario) {
+      var nota1 = parseInt(document.querySelector('.' + formulario).querySelector("#nota1").value);
+      var nota2 = parseInt(document.querySelector('.' + formulario).querySelector("#nota2").value);
+      var nota3 = parseInt(document.querySelector('.' + formulario).querySelector("#nota3").value);
+      var asistencia = parseInt(document.querySelector('.' + formulario).querySelector("#asistencia").value);
+      var promedio = (nota1 + nota2 + nota3) / 3;
+      document.querySelector('.' + formulario).querySelector("#promedio").innerHTML = promedio.toFixed(2);
+      if (promedio >= 40 && asistencia >= 75) {
+        document.querySelector('.' + formulario).querySelector("#estado").innerHTML = "Aprobado";
+      } else {
+        document.querySelector('.' + formulario).querySelector("#estado").innerHTML = "Reprobado";
+      }
+      document.querySelector('.' + formulario).querySelector(".result").style.display = "block";
+    }
+
+    function contarCaracteres(formulario) {
+      var nombre1 = document.querySelector('.' + formulario).querySelector("#nombre1").value;
+      var nombre2 = document.querySelector('.' + formulario).querySelector("#nombre2").value;
+      var nombre3 = document.querySelector('.' + formulario).querySelector("#nombre3").value;
+
+      var longitud1 = nombre1.length;
+      var longitud2 = nombre2.length;
+      var longitud3 = nombre3.length;
+
+      var palabras = [
+        { nombre: nombre1, longitud: longitud1 },
+        { nombre: nombre2, longitud: longitud2 },
+        { nombre: nombre3, longitud: longitud3 }
+      ];
+
+      palabras.sort(function(a, b) {
+        return b.longitud - a.longitud;
+      });
+
+      var palabraLarga = palabras[0].nombre;
+      var longitudPalabraLarga = palabras[0].longitud;
+
+      document.querySelector('.' + formulario).querySelector("#palabraLarga").innerHTML = palabraLarga;
+      document.querySelector('.' + formulario).querySelector("#longitudPalabraLarga").innerHTML = longitudPalabraLarga;
+      document.querySelector('.' + formulario).querySelector(".result").style.display = "block";
+    }
+
+    function cerrarFormulario(formulario) {
+      document.querySelector('.' + formulario).style.display = 'none';
+    }
+  </script>
+</body>
+</html>
